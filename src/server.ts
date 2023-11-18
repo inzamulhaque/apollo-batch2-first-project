@@ -1,6 +1,6 @@
-import app from "./app";
-import mongoose from "mongoose";
-import config from "./app/config";
+import app from './app';
+import mongoose from 'mongoose';
+import config from './app/config';
 const port = process.env.PORT || 7000;
 
 async function main() {
@@ -8,7 +8,7 @@ async function main() {
     await mongoose.connect(
       `mongodb+srv://${config.dbUser as string}:${
         config.dbPassword as string
-      }@cluster0.ehl62mb.mongodb.net/first-project?retryWrites=true&w=majority`
+      }@cluster0.ehl62mb.mongodb.net/first-project?retryWrites=true&w=majority`,
     );
 
     app.listen(port, () => {
