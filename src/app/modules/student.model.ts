@@ -92,7 +92,7 @@ const studentSchema = new Schema<Student>({
     type: String,
     required: true,
   },
-  permanentAddres: {
+  permanentAddress: {
     type: String,
     required: true,
   },
@@ -102,4 +102,6 @@ const studentSchema = new Schema<Student>({
   isActive: ['active', 'blocked'],
 });
 
-const Student = model<Student>('Student', studentSchema);
+const StudentModel = model<Student>('Student', studentSchema);
+
+export default StudentModel;
