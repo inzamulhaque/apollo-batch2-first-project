@@ -4,12 +4,23 @@ import {
   getAllStudentsFromDB,
   getSingleStudentFromDB,
 } from './student.service';
+import studentValidationSchema from './student.validation';
 
 const createStudent = async (req: Request, res: Response) => {
   try {
     const { student: studentData } = req.body;
 
-    const result = await createStudentIntoDB(studentData);
+    const { error, value } = studentValidationSchema.validate(studentData);
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        message: 'Student not created',
+        error,
+      });
+    }
+
+    const result = await createStudentIntoDB(value);
 
     res.status(201).json({
       success: true,
