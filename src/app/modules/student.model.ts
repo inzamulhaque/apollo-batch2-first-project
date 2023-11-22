@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
+import bcrypt from 'bcrypt';
+import { bcrypt_salt_rounds } from '../config/index';
 import {
   TGuardian,
   TLocalGuardian,
@@ -87,11 +89,16 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<TStudent, TStudentModel, TStudentMethods>({
+const studentSchema = new Schema<TStudent, TStudentModel>({
   id: {
     type: String,
     required: [true, 'Student ID is required'],
     unique: true,
+  },
+
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
   },
 
   name: {
@@ -156,7 +163,27 @@ const studentSchema = new Schema<TStudent, TStudentModel, TStudentMethods>({
 });
 
 // creating a custom instance method
-studentSchema.methods.isUserExists = async function (id) {
+// studentSchema.methods.isUserExists = async function (id) {
+//   const existingUser = await Student.findOne({ id });
+//   return existingUser;
+// };
+
+// pre save middleware/hook
+studentSchema.pre('save', async function (next) {
+  // console.log({ pre: this });
+
+  // hashing password and save into DB
+  this.password = await bcrypt.hash(this.password, Number(bcrypt_salt_rounds));
+  next();
+});
+
+// post save middleware/hook
+studentSchema.post('save', function () {
+  console.log({ post: this });
+});
+
+// creating a custom static method
+studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser;
 };
