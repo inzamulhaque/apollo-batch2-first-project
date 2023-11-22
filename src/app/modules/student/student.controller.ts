@@ -4,33 +4,25 @@ import {
   getAllStudentsFromDB,
   getSingleStudentFromDB,
 } from './student.service';
-import studentValidationSchema from './student.validation';
+import StudentValidationSchema from './student.validation';
 
 const createStudent = async (req: Request, res: Response) => {
   try {
     const { student: studentData } = req.body;
 
-    const { error, value } = studentValidationSchema.validate(studentData);
+    const zodParseData = StudentValidationSchema.parse(studentData);
 
-    if (error) {
-      return res.status(500).json({
-        success: false,
-        message: 'Student not created',
-        error,
-      });
-    }
-
-    const result = await createStudentIntoDB(value);
+    const result = await createStudentIntoDB(zodParseData);
 
     res.status(201).json({
       success: true,
       message: 'Student is created successfully',
       data: result,
     });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'Student not created',
+      message: err.message || 'Student not created',
       error: err,
     });
   }

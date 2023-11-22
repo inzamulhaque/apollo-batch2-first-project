@@ -1,76 +1,65 @@
-import Joi from 'joi';
+import { z } from 'zod';
 
-const guardianValidationSchema = Joi.object({
-  fatherName: Joi.string().required().label('Father name'),
-  fatherOccupation: Joi.string().required().label('Father occupation'),
-  fatherContactNo: Joi.string().required().label('Father contact number'),
-  motherName: Joi.string().required().label('Mother name'),
-  motherOccupation: Joi.string().required().label('Mother occupation'),
-  motherContactNo: Joi.string().required().label('Mother contact number'),
-});
+const GuardianValidationSchema = z
+  .object({
+    fatherName: z.string().nonempty().min(1).max(255).optional(),
+    fatherOccupation: z.string().nonempty().min(1).max(255).optional(),
+    fatherContactNo: z.string().nonempty().min(1).max(255).optional(),
+    motherName: z.string().nonempty().min(1).max(255).optional(),
+    motherOccupation: z.string().nonempty().min(1).max(255).optional(),
+    motherContactNo: z.string().nonempty().min(1).max(255).optional(),
+  })
+  .nonstrict();
 
-const localGuardianValidationSchema = Joi.object({
-  name: Joi.string().required().label('Local guardian name'),
-  occupation: Joi.string().required().label('Local guardian occupation'),
-  contactNo: Joi.string().required().label('Local guardian contact number'),
-  address: Joi.string().required().label('Local guardian address'),
-});
+const LocalGuardianValidationSchema = z
+  .object({
+    name: z.string().nonempty().min(1).max(255).optional(),
+    occupation: z.string().nonempty().min(1).max(255).optional(),
+    contactNo: z.string().nonempty().min(1).max(255).optional(),
+    address: z.string().nonempty().min(1).max(255).optional(),
+  })
+  .nonstrict();
 
-const userNameValidationSchema = Joi.object({
-  firstName: Joi.string()
-    .required()
-    .trim()
-    .max(20)
-    .label('First name')
-    .regex(/^[A-Z][a-z]*$/, { name: 'capitalize format' }),
-  middleName: Joi.string().trim().label('Middle name'),
-  lastName: Joi.string()
-    .required()
-    .trim()
-    .label('Last name')
-    .regex(/^[A-Za-z]+$/, { name: 'valid' }),
-});
+const UserNameValidationSchema = z
+  .object({
+    firstName: z
+      .string()
+      .nonempty()
+      .min(1)
+      .max(20)
+      .regex(/^[A-Z][a-z]*$/, { message: 'First name should be capitalized' })
+      .optional(),
+    middleName: z.string().nonempty().min(1).max(255).optional(),
+    lastName: z
+      .string()
+      .nonempty()
+      .min(1)
+      .max(255)
+      .regex(/^[A-Za-z]+$/, {
+        message: 'Last name is not valid',
+      }),
+  })
+  .nonstrict();
 
-const studentValidationSchema = Joi.object({
-  id: Joi.string().required().label('Student ID').trim(),
+const StudentValidationSchema = z
+  .object({
+    id: z.string().nonempty().min(1).max(255),
+    name: UserNameValidationSchema,
+    gender: z.enum(['male', 'female', 'other']),
+    dateOfBirth: z.string().nonempty().min(1).max(255).optional(),
+    email: z.string().nonempty().min(1).max(255).email(),
+    contactNo: z.string().nonempty().min(1).max(255),
+    emergencyContactNo: z.string().nonempty().min(1).max(255),
+    bloodGroup: z
+      .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+      .optional(),
+    presentAddress: z.string().nonempty().min(1).max(255),
+    permanentAddress: z.string().nonempty().min(1).max(255),
+    guardian: GuardianValidationSchema,
+    localGuardian: LocalGuardianValidationSchema,
+    profileImg: z.string().nonempty().min(1).max(255).optional(),
+    isActive: z.enum(['active', 'blocked']).optional(),
+  })
+  .nonstrict();
 
-  name: userNameValidationSchema.required().label('Student name'),
-
-  gender: Joi.string()
-    .valid('male', 'female', 'other')
-    .required()
-    .label('Gender'),
-
-  dateOfBirth: Joi.string().label('Date of birth'),
-
-  email: Joi.string().required().email().label('Email').messages({
-    'string.email': '{#label} is not a valid email',
-  }),
-
-  contactNo: Joi.string().required().label('Contact number'),
-
-  emergencyContactNo: Joi.string().required().label('Emergency contact number'),
-
-  bloodGroup: Joi.string()
-    .valid('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-')
-    .label('Blood group'),
-
-  presentAddress: Joi.string().required().label('Present address'),
-
-  permanentAddress: Joi.string().required().label('Permanent address'),
-
-  guardian: guardianValidationSchema.required().label('Guardian details'),
-
-  localGuardian: localGuardianValidationSchema
-    .required()
-    .label('Local guardian details'),
-
-  profileImg: Joi.string().label('Profile image'),
-
-  isActive: Joi.string()
-    .valid('active', 'blocked')
-    .label('Active status')
-    .default('active'),
-});
-
-export default studentValidationSchema;
+export default StudentValidationSchema;
