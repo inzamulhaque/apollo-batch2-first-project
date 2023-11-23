@@ -60,6 +60,7 @@ const StudentValidationSchema = z
     localGuardian: LocalGuardianValidationSchema,
     profileImg: z.string().nonempty().min(1).max(255).optional(),
     isActive: z.enum(['active', 'blocked']).optional(),
+    isDeleted: z.boolean().optional(),
   })
   .nonstrict();
 

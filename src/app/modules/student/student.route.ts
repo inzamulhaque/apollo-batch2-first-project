@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   createStudent,
+  deleteStudent,
   getAllStudents,
   getSingleStuden,
 } from './student.controller';
@@ -12,5 +13,7 @@ router.get('/', getAllStudents);
 router.get('/:studentId', getSingleStuden);
 
 router.post('/create-student', createStudent);
+
+router.delete('/:studentId', deleteStudent);
 
 export const StudentRoutes = router;

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {
   createStudentIntoDB,
+  deleteStudentFromDB,
   getAllStudentsFromDB,
   getSingleStudentFromDB,
 } from './student.service';
@@ -37,8 +38,12 @@ const getAllStudents = async (req: Request, res: Response) => {
       message: 'Student are retrieved successfully',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'No user student found',
+      error: error,
+    });
   }
 };
 
@@ -51,9 +56,32 @@ const getSingleStuden = async (req: Request, res: Response) => {
       message: 'Student is retrieved successfully',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'No user student found',
+      error: error,
+    });
   }
 };
 
-export { createStudent, getAllStudents, getSingleStuden };
+const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const result = await deleteStudentFromDB(studentId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Student deleted successfully',
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Student not deleted',
+      error: error,
+    });
+  }
+};
+
+export { createStudent, getAllStudents, getSingleStuden, deleteStudent };
